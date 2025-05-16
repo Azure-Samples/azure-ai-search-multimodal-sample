@@ -314,3 +314,4 @@ output AZURE_WEBAPP_URL string = appservice.outputs.webAppUri
 output AZURE_WEBAPP_PRINCIPAL_ID string = appservice.outputs.webAppPrincipalId
 output AZURE_OPENAI_EMBEDDING_DEPLOYMENT string = openAiEmbeddingModelName
 output KNOWLEDGE_AGENT_NAME string = knowledgeAgentName
+output AZURE_RESOURCE_GROUP string = rgName

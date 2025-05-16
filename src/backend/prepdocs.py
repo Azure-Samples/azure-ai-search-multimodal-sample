@@ -163,10 +163,10 @@ async def main(source: str, indexer_Strategy: Optional[str] = None):
             await process_files(
                 process_file, documents_to_process_folder, documents_output_folder
             )
-        elif source == "MIML":
+        elif source == "blobs":
             await process_blobs(process_file, *get_blob_storage_credentials())
         else:
-            raise ValueError("Invalid source. Must be 'files' or 'MIML'.")
+            raise ValueError("Invalid source. Must be 'files' or 'blobs'.")
     else:
         raise ValueError("Invalid indexer strategy. Check readme for available.")
 
@@ -208,43 +208,31 @@ async def process_files(
 async def process_blobs(
     process_file, storage_account_name: str, blob_container_name: str, sas_token: str
 ):
-    # print all parameters
     print(f"storage_account_name: {storage_account_name}")
     print(f"blob_container_name: {blob_container_name}")
     print(f"sas_token: {sas_token}")
 
-    # Implement the logic to process files from blob storage
     blob_service_client = BlobServiceClient(
         account_url=f"https://{storage_account_name}.blob.core.windows.net",
         credential=sas_token,
     )
     container_client = blob_service_client.get_container_client(blob_container_name)
 
-    blobs = container_client.list_blobs(
-        name_starts_with="miml/downloaded_pdfs_that_were_indexed/", include=["metadata"]
-    )
+    blobs = container_client.list_blobs(include=["metadata"])
 
     count = 0
     for blob in blobs:
-        if (
-            blob.metadata is not None
-            and blob.metadata.get("industry") == "human_resources"
-            and blob.metadata.get("lang") == "en"
-        ):
-            if count > 100:
-                break
+        print(f"Processing blob: {blob.name}")
+        blob_client = container_client.get_blob_client(blob)
 
-            print(f"Processing blob: {blob.name}")
-            blob_client = container_client.get_blob_client(blob)
-
-            stream = blob_client.download_blob()
-            data = stream.readall()
-            count += 1
-            await process_file.process_file(
-                data,
-                blob.name,
-                os.environ["SEARCH_INDEX_NAME"],
-            )
+        stream = blob_client.download_blob()
+        data = stream.readall()
+        count += 1
+        await process_file.process_file(
+            data,
+            blob.name,
+            os.environ["SEARCH_INDEX_NAME"],
+        )
 
 
 if __name__ == "__main__":
@@ -253,8 +241,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--source",
-        choices=["files", "MIML"],
-        help="Specify the source of documents: 'files' for local files or 'MIML' for blobs.",
+        choices=["files", "blobs"],
+        help="Specify the source of documents: 'files' for local files or 'blobs' for blobs.",
     )
     parser.add_argument(
         "--indexer_strategy",
