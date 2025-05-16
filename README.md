@@ -30,7 +30,9 @@ This demo is intentionally kept lean and simple, providing a hands-on experience
 
 Note that currently this sample doesn't have support for table extraction as a structure, but tables are extracted as plain text.
 
-![image](docs/images/sample_snap_1.jpg) ![image](docs/images/sample_snap_3.jpg) ![image](docs/images/sample_snap_2.jpg) 
+![image](docs/images/sample_snap_1.jpg) 
+**Text citations**![image](docs/images/sample_snap_3.jpg) ![image](docs/images/sample_snap_2.jpg) 
+**Image citations**![image](docs/images/image-cite-1.jpg) ![image](docs/images/image-cite-2.jpg) 
 
 ## Getting Started
 

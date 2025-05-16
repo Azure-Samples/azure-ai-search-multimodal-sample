@@ -96,7 +96,7 @@ const VerticalTimeline: React.FC<TimelineProps> = ({ processingStepMsg }) => {
                     ))}
                 </div>
 
-                <DialogSurface className="editor-dialog">
+                <DialogSurface className="editor-dialog" mountNode={undefined}>
                     <DialogBody>
                         <DialogContent>
                             <Editor height="700px" defaultLanguage="json" defaultValue={editorJSON || ""} theme="vs-dark" />
