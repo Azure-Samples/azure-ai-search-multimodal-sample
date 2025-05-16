@@ -108,7 +108,8 @@ NOTE: It may take 5-10 minutes after you see 'SUCCESS' for the application to be
 - You could also use different indexer strategies **["indexer-image-verbal", "self-multimodal-embedding"]**
 - To create new index with a different strategy
   - Run ```azd set SEARCH_INDEX_NAME <new-index-name>```
-  - Run ```scripts\prepdocs.ps1 -IndexerStrategy indexer-image-verbal ```
+  - **On Windows** Run ```scripts\prepdocs.ps1 -IndexerStrategy indexer-image-verbal ```
+  - **On Linux** Run ```scripts\prepdocs.ps1 indexer-image-verbal ```
 ---
 
 ## Azure Services Used for Deployment  
