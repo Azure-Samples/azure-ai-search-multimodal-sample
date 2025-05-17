@@ -34,6 +34,32 @@ Note that currently this sample doesn't have support for table extraction as a s
 **Text citations**![image](docs/images/sample_snap_3.jpg) ![image](docs/images/sample_snap_2.jpg) 
 **Image citations**![image](docs/images/image-cite-1.jpg) ![image](docs/images/image-cite-2.jpg) 
 
+## Azure AI Search Portal: Bring your own index and resources
+
+You can create an index using the AI Search portal's quick wizard for the multimodal scenario. Once the index is successfully created, you can integrate it with the app by running the following steps:
+
+- Checkout a [code space](#azure-ai-search-multimodal-rag-demo) based on **main** branch
+- Run ```az login --use-device-code```
+- Run 
+   ```pwsh
+   .scripts/portal-2-app.ps1 `
+        -SearchIndexName "my-index" `
+        -SearchServiceEndpoint "https://myservice.search.windows.net" `
+        -StorageAccountUrl "https://myaccount.blob.core.windows.net" `
+        -KnowledgeStoreContainerName "mm-knowledgestore-artifacts" `
+        -DataSourcesContainerName "mm-data-sources" `
+        -AzureOpenAiEndpoint "https://myopenai.openai.azure.com" `
+        -AzureOpenAiDeploymentName "my-deployment" `
+        -AzureOpenAiEndpointChatCompletionModelName "gpt-4o"
+   ```
+
+   Replace the placeholders (`<...>`) with your specific values. This script will configure the app to use the newly created index.
+- Ensure your Azure Entra ID user object ID has been granted the necessary permissions for all required resources. See [Role Mapping for the Application](#role-mapping-for-the-application) for details.
+- Run:
+   ```bash
+      src/start.sh
+   ```
+
 ## Getting Started
 
 ### General Requirements  

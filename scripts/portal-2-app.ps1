@@ -22,7 +22,15 @@
 .PARAMETER DataSourcesContainerName
     Name of the container in Azure Storage that holds your data.
 .EXAMPLE
-    .\portal-2-app.ps1 -SearchIndexName "my-index" -SearchServiceEndpoint "https://myservice.search.windows.net" -StorageAccountUrl "https://myaccount.blob.core.windows.net" -KnowledgeStoreContainerName "mm-knowledgestore-artifacts" -DataSourcesContainerName "mm-data-sources" -WebAppName "mywebapp" -ResourceGroupName "myResourceGroup" -SubscriptionId "mySubscriptionId"
+    .\portal-2-app.ps1 `
+        -SearchIndexName "my-index" `
+        -SearchServiceEndpoint "https://myservice.search.windows.net" `
+        -StorageAccountUrl "https://myaccount.blob.core.windows.net" `
+        -KnowledgeStoreContainerName "mm-knowledgestore-artifacts" `
+        -DataSourcesContainerName "mm-data-sources" `
+        -AzureOpenAiEndpoint "https://myopenai.openai.azure.com" `
+        -AzureOpenAiDeploymentName "my-deployment" `
+        -AzureOpenAiEndpointChatCompletionModelName "gpt-4o"
 #>
 
 param(
@@ -41,15 +49,29 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$DataSourcesContainerName,
 
-     [Parameter(Mandatory = $false)]
-    [string]$WebAppName,
+    [Parameter(Mandatory = $true)]
+    [string]$AzureOpenAiEndpoint,
+
+    [Parameter(Mandatory = $true)]
+    [string]$AzureOpenAiDeploymentName,
+
+    [Parameter(Mandatory = $true)]
+    [string]$AzureOpenAiEndpointChatCompletionModelName,
 
     [Parameter(Mandatory = $false)]
-    [string]$ResourceGroupName,
-
-    [Parameter(Mandatory = $false)]
-    [string]$SubscriptionId
+    [string]$KnowledgeAgentName = "my-knowledge-agent"
+   
 )
+
+# Check if an azd environment exists, if not, create one
+try {
+    $azdEnv = azd env get-values --output json | ConvertFrom-Json
+} catch {
+    Write-Host "No azd environment found. Creating a new environment..."
+    $defaultEnvName = "my-multimodal-env"
+    azd env new $defaultEnvName
+    $azdEnv = azd env get-values --output json | ConvertFrom-Json
+}
 
 # Set AZD Environment Variables
 azd env set SEARCH_INDEX_NAME $SearchIndexName
@@ -57,22 +79,7 @@ azd env set SEARCH_SERVICE_ENDPOINT $SearchServiceEndpoint
 azd env set ARTIFACTS_STORAGE_ACCOUNT_URL $StorageAccountUrl
 azd env set ARTIFACTS_STORAGE_CONTAINER $KnowledgeStoreContainerName
 azd env set SAMPLES_STORAGE_CONTAINER $DataSourcesContainerName
+azd env set AZURE_OPENAI_ENDPOINT $AzureOpenAiEndpoint
+azd env set AZURE_OPENAI_DEPLOYMENT $AzureOpenAiDeploymentName
+azd env set AZURE_OPENAI_MODEL_NAME $AzureOpenAiEndpointChatCompletionModelName
 
-# Update web app settings and restart if web app parameters are provided
-if ($WebAppName -and $ResourceGroupName -and $SubscriptionId) {
-    Write-Host "Updating web app configuration settings..."
-    
-    # Update web app settings
-    az webapp config appsettings set --name $WebAppName --subscription $SubscriptionId  --resource-group $ResourceGroupName --settings `
-        SEARCH_INDEX_NAME=$SearchIndexName `
-        SEARCH_SERVICE_ENDPOINT=$SearchServiceEndpoint `
-        ARTIFACTS_STORAGE_ACCOUNT_URL=$StorageAccountUrl `
-        ARTIFACTS_STORAGE_CONTAINER=$KnowledgeStoreContainerName `
-        SAMPLES_STORAGE_CONTAINER=$DataSourcesContainerName `
-
-    # Restart the web app
-    Write-Host "Restarting web app: $WebAppName..."
-    az webapp restart --name $WebAppName --resource-group $ResourceGroupName --subscription $SubscriptionId
-    
-    Write-Host "Web app configuration updated and restarted successfully."
-}
