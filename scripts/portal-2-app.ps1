@@ -82,4 +82,5 @@ azd env set SAMPLES_STORAGE_CONTAINER $DataSourcesContainerName
 azd env set AZURE_OPENAI_ENDPOINT $AzureOpenAiEndpoint
 azd env set AZURE_OPENAI_DEPLOYMENT $AzureOpenAiDeploymentName
 azd env set AZURE_OPENAI_MODEL_NAME $AzureOpenAiEndpointChatCompletionModelName
+azd env set KNOWLEDGE_AGENT_NAME $KnowledgeAgentName
 

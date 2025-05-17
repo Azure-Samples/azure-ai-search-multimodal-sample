@@ -3,7 +3,8 @@
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Azure AI Search Multimodal RAG Demo](#azure-ai-search-multimodal-rag-demo)
+- [Azure AI Search Portal: Bring your own index and resources](#azure-ai-search-portal-bring-your-own-index-and-resources)
 - [Getting Started](#getting-started)
    - [General Requirements](#general-requirements)
 - [Environment setup](#environment-setup)
@@ -15,8 +16,9 @@
 - [Azure Services Used for Deployment](#azure-services-used-for-deployment)
    - [Role Mapping for the Application](#role-mapping-for-the-application)
 - [End-to-end app diagram](#end-to-end-app-diagram)
-- [Azure AI Search Portal Compatibility](#azure-ai-search-portal-compatibility)
 - [Troubleshooting](#troubleshooting)
+
+
 
 Welcome to the **Azure AI Search Multimodal RAG Demo**. This repository contains the code for an application designed to showcase [multimodal](https://aka.ms/azs-multimodal) [Retrieval-Augmented Generation (RAG)](https://learn.microsoft.com/azure/search/retrieval-augmented-generation-overview) techniques using [Azure AI Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search). This demo combines AI capabilities to create custom copilots / RAG applications that can query, retrieve, and reason over both text and image data.
 
@@ -35,14 +37,13 @@ Note that currently this sample doesn't have support for table extraction as a s
 **Image citations**![image](docs/images/image-cite-1.jpg) ![image](docs/images/image-cite-2.jpg) 
 
 ## Azure AI Search Portal: Bring your own index and resources
-
 You can create an index using the AI Search portal's quick wizard for the multimodal scenario. Once the index is successfully created, you can integrate it with the app by running the following steps:
 
 - Checkout a [code space](#azure-ai-search-multimodal-rag-demo) based on **main** branch
 - Run ```az login --use-device-code```
 - Run 
    ```pwsh
-   .scripts/portal-2-app.ps1 `
+   scripts/portal-2-app.ps1 `
         -SearchIndexName "my-index" `
         -SearchServiceEndpoint "https://myservice.search.windows.net" `
         -StorageAccountUrl "https://myaccount.blob.core.windows.net" `
@@ -174,23 +175,6 @@ The following table maps the roles used by the application to their respective f
 ## End-to-end app diagram
 
 ![image](https://github.com/user-attachments/assets/5984f2b7-e0d9-4d2c-a652-9a7b10085b79)
-
-## Azure AI Search Portal Compatibility
-
-You can also create an index using the AI Search portal's quick wizard for the multimodal scenario. Once the index is successfully created, you can integrate it with the app by running the following script:
-
-```pwsh
-.\scripts\portal-2-app.ps1 -SearchIndexName "<vector-xxx>" `
-               -SearchServiceEndpoint "https://<endpoint>.search.windows.net/" `
-               -StorageAccountUrl "https://<my-account>.blob.core.windows.net/" `
-               -KnowledgeStoreContainerName "<knowledge_store_container>" `
-               -DataSourceContainerName "<your_data_source_container_name>"
-               -WebAppName "<deployed_app>" `
-               -ResourceGroupName "<resource_group>" `
-               -SubscriptionId "<subscription_id>"
-```
-
-Replace the placeholders (`<...>`) with your specific values. This script will configure the app to use the newly created index.
 
 ## Troubleshooting
 - What is the region availability for Azure OpenAI service?  
