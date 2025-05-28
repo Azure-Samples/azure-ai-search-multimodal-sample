@@ -175,7 +175,7 @@ The following table maps the roles used by the application to their respective f
 
 ## End-to-end app diagram
 
-![image](https://github.com/user-attachments/assets/5984f2b7-e0d9-4d2c-a652-9a7b10085b79)
+![image](/docs/images/E2E_multimodal_flow.png)
 
 ## Troubleshooting
 - What is the region availability for Azure OpenAI service?  
