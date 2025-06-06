@@ -62,6 +62,9 @@ class ProcessFile:
         self.container_client = self.blob_service_client.get_container_client(
             os.environ["ARTIFACTS_STORAGE_CONTAINER"]
         )
+        self.sample_container_client = self.blob_service_client.get_container_client(
+            os.environ["SAMPLES_STORAGE_CONTAINER"]
+        )
 
     async def process_file(
         self,
@@ -70,9 +73,14 @@ class ProcessFile:
         index_name: str,
     ):
         try:
+            await self.sample_container_client.create_container()
+        except Exception as e:
+            print(f"Error creating samples container: {e}")
+        try:
             await self.container_client.create_container()
         except Exception as e:
-            print(f"Error creating container: {e}")
+            print(f"Error creating knowledgeStore container: {e}")
+        
         try:
             fields = [
                 SimpleField(
@@ -225,7 +233,7 @@ class ProcessFile:
     async def _process_pdf(self, file_bytes: bytes, file_name: str, index_name: str):
         """Processes PDF documents for text, layout, and image embeddings."""
 
-        await self.container_client.upload_blob(file_name, file_bytes, overwrite=True)
+        await self.sample_container_client.upload_blob(file_name, file_bytes, overwrite=True)
 
         paragraphs, images = await self.analyze_document(file_bytes, file_name)
 
