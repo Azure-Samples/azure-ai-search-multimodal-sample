@@ -163,11 +163,11 @@ The following Azure services are used as part of this deployment. Ensure you ver
 
 ### Role Mapping for the Application  
 The following table maps the roles used by the application to their respective functions:  
-
+  
 | **Role ID**                              | **Built-in Role Name**                   | **Granting Resource**           | **Receiving Resource** | **Purpose**                                                                                     |  
 |------------------------------------------|------------------------------------------|---------------------------------|------------------------|-------------------------------------------------------------------------------------------------|  
 | `5e0bd9bd-7b93-4f28-af87-19fc36ad61bd`   | **Cognitive Services OpenAI User**       |          Azure OpenAI           |     Azure AI Search    | Read-only access to models, files, and deployments in an Azure OpenAI resource. Allows running completion/embedding/image-generation calls. |  
-| `a97b65f3-24c7-4388-baec-2e87135dc908`   | **Cognitive Services User**              |          Azure OpenAI           |     Azure AI Search    | Provides read access to an Azure Cognitive Services resource and the ability to list its access keys. (No write or manage permissions.) |  
+| `a97b65f3-24c7-4388-baec-2e87135dc908`   | **Cognitive Services User**              |          Azure OpenAI           |     Azure AI services multi-service account    | Provides read access to an Azure AI services multi-service account resource. (No write or manage permissions.) |  
 | `ba92f5b4-2d11-453d-a403-e96b0029c9fe`   | **Storage Blob Data Contributor**        |        Storage Account          |     Azure AI Search    | Allows read, upload, modify, and delete operations on blobs and containers within an Azure Storage account (data-plane only). |  
 | `7ca78c08-252a-4471-8644-bb5ff32d4ba0`   | **Search Service Contributor**           |          Azure AI hub           |     Azure AI Search    | Enables management of the Azure Cognitive Search service (e.g., create, scale, delete). Does not provide access to index data itself. |  
 | `8ebe5a00-799e-43f5-93ac-243d3dce84a7`   | **Search Index Data Contributor**        |        Azure AI Search          |           User         | Provides full create, read, update, and delete access to all |  
