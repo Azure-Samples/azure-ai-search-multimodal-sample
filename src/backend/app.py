@@ -105,6 +105,9 @@ async def create_app():
     artifacts_container_client = blob_service_client.get_container_client(
         os.environ["ARTIFACTS_STORAGE_CONTAINER"]
     )
+    samples_container_client = blob_service_client.get_container_client(
+        os.environ["SAMPLES_STORAGE_CONTAINER"]
+    )
 
     app = web.Application(middlewares=[])
 
@@ -118,7 +121,7 @@ async def create_app():
     mmrag.attach_to_app(app, "/chat")
 
     citation_files_handler = CitationFilesHandler(
-        blob_service_client, artifacts_container_client
+        blob_service_client, samples_container_client
     )
 
     current_directory = Path(__file__).parent

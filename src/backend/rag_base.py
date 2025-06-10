@@ -137,6 +137,12 @@ class RagBase(ABC):
                 complete_response = chat_completion.model_dump()
             else:
                 raise ValueError("No response received from chat completion stream.")
+            
+        await self._send_processing_step_message(
+            request_id,
+            response,
+            ProcessingStep(title="LLM response", type="code", content=complete_response),
+        )
 
         await self._extract_and_send_citations(
             request_id,
