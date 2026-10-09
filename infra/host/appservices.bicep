@@ -8,6 +8,16 @@ param linuxFxVersion string
 @description('Location for all resources.')
 param location string = resourceGroup().location
 param appsettings object = {}
+@description('Client ID of a single-tenant Microsoft Entra application registered for this site.')
+@minLength(36)
+param authClientId string
+@secure()
+@description('Client secret of the Microsoft Entra application.')
+@minLength(1)
+param authClientSecret string
+@description('Microsoft Entra tenant that issues sign-in tokens.')
+@minLength(36)
+param authTenantId string
 
 var appServicePlanName = 'AppServicePlan-${webAppName}'
 
@@ -51,6 +61,7 @@ resource siteConfig 'Microsoft.Web/sites/config@2024-04-01' = {
     remoteDebuggingEnabled: false
     remoteDebuggingVersion: 'VS2022'
     httpLoggingEnabled: false
+    webSocketsEnabled: false
     appCommandLine: 'python -m pip install -r requirements.txt && python app.py'
   }
 }
@@ -59,7 +70,53 @@ resource siteConfig 'Microsoft.Web/sites/config@2024-04-01' = {
 resource appSettings 'Microsoft.Web/sites/config@2022-03-01' = {
   parent: webAppPortal
   name: 'appsettings'
-  properties: appsettings
+  properties: union(appsettings, {
+    MICROSOFT_PROVIDER_AUTHENTICATION_SECRET: authClientSecret
+  })
+}
+
+resource authentication 'Microsoft.Web/sites/config@2022-09-01' = {
+  parent: webAppPortal
+  name: 'authsettingsV2'
+  properties: {
+    platform: {
+      enabled: true
+    }
+    globalValidation: {
+      requireAuthentication: true
+      unauthenticatedClientAction: 'RedirectToLoginPage'
+      redirectToProvider: 'azureactivedirectory'
+    }
+    httpSettings: {
+      requireHttps: true
+      forwardProxy: {
+        convention: 'NoProxy'
+      }
+    }
+    identityProviders: {
+      azureActiveDirectory: {
+        enabled: true
+        registration: {
+          clientId: authClientId
+          clientSecretSettingName: 'MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'
+          openIdIssuer: '${environment().authentication.loginEndpoint}${authTenantId}/v2.0'
+        }
+        validation: {
+          allowedAudiences: [
+            authClientId
+          ]
+        }
+      }
+    }
+    login: {
+      tokenStore: {
+        enabled: false
+      }
+    }
+  }
+  dependsOn: [
+    appSettings
+  ]
 }
 
 
