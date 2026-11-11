@@ -6,6 +6,13 @@ targetScope = 'subscription'
 param environment string
 @description('Object ID of the user that will be used to deploy the resources. See readme for more details.')
 param principalId string
+@description('Single-tenant Microsoft Entra application (client) ID for web app sign-in.')
+@minLength(36)
+param authClientId string
+@secure()
+@description('Microsoft Entra application client secret for web app sign-in.')
+@minLength(1)
+param authClientSecret string
 @minLength(1)
 @description('Primary location for all resources')
 param location string
@@ -137,6 +144,9 @@ module appservice 'host/appservices.bicep' = {
     linuxFxVersion: 'python|3.13'
     sku: 'B1'
     appsettings: appsettings
+    authClientId: authClientId
+    authClientSecret: authClientSecret
+    authTenantId: subscription().tenantId
   }
 }
 

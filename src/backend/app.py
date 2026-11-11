@@ -141,5 +141,7 @@ async def create_app():
 
 if __name__ == "__main__":
     host = os.environ.get("HOST", "localhost")
+    if host not in ("localhost", "127.0.0.1", "::1") and not os.environ.get("WEBSITE_INSTANCE_ID"):
+        raise RuntimeError("Non-loopback hosting requires App Service authentication.")
     port = int(os.environ.get("PORT", 5000))
     web.run_app(create_app(), host=host, port=port)

@@ -8,6 +8,7 @@
 - [Getting Started](#getting-started)
    - [General Requirements](#general-requirements)
 - [Environment setup](#environment-setup)
+   - [Access control](#access-control)
    - [Github codespaces](#github-codespaces)
    - [Local development setup (Windows or Linux)](#local-development-setup-windows-or-linux)
    - [Provision resources and deploy working app](#provision-resources-and-deploy-working-app)
@@ -85,6 +86,16 @@ To deploy and run this application, you will need the following:
 
 ## Environment setup
 
+### Access control
+
+The deployed site requires Microsoft Entra sign-in through App Service Authentication (Easy Auth). Authentication is enforced at the App Service ingress for **all** paths, including `/chat`, `/list_indexes`, `/get_citation_doc`, and the static frontend. The backend does not treat client-supplied identity headers as proof of authentication. Do not expose the backend directly or disable App Service Authentication. Sign-in grants access to the application's entire index and sample-document container; this sample does not implement per-user or per-document authorization. Only deploy data that all permitted users may read.
+
+Before provisioning, register a **single-tenant** web application in the subscription's Microsoft Entra tenant. Add the web redirect URI `https://<web-app-name>.azurewebsites.net/.auth/login/aad/callback` (the deployed App Service hostname), create a client secret, and configure `AZURE_AUTH_CLIENT_ID` and `AZURE_AUTH_CLIENT_SECRET` in the azd environment. For example, use `azd env set AZURE_AUTH_CLIENT_ID <application-client-id>` and `azd env set AZURE_AUTH_CLIENT_SECRET <client-secret>` in your own isolated azd environment. Keep the secret out of source control and rotate it according to your organization's policy. The deployment requires both values; it does not provision an Entra application. Set the redirect URI before using the deployed site. Ensure authentication is enabled and requires sign-in on the deployed App Service **before** loading sensitive documents, including when upgrading an existing deployment.
+
+The citation endpoint returns a read-only blob SAS valid for five minutes to signed-in users. A SAS is a bearer credential and remains usable until it expires even after the user signs out. Do not log or share citation URLs. Local debugging has no Easy Auth ingress: it binds to loopback by default and refuses non-loopback hosting outside App Service. Do not forward the local port or use local development with sensitive documents on an untrusted machine.
+
+No application route uses WebSockets; the deployment disables WebSockets and does not trust forwarded proxy headers for authentication or redirect decisions. If adding WebSockets or a front proxy, review the App Service authentication ingress and trusted proxy configuration before enabling either. App Service authentication, not the `WEBSITE_*` environment variables or HTTP identity headers, authorizes deployed requests.
+
 ### Github codespaces
 - Checkout a [code space](#azure-ai-search-multimodal-rag-demo) based on **main** branch
 
@@ -97,6 +108,7 @@ Install the below tools
 - [Powershell 7 (Windows and Linux)](https://github.com/powershell/powershell)
 
 ### Provision resources and deploy working app
+- Complete the [access control](#access-control) setup first; deployment now requires an existing single-tenant app registration and secret.
 - Run below commands (One time setup per environment)
   - Run ```az login --use-device-code```
   - Run ```azd auth login```
@@ -192,4 +204,3 @@ The following table maps the roles used by the application to their respective f
 - Deployment fails for 'Cohere' in marketplace subscription !['Error from azd up'](docs/images/marketplace_error.png)
   - Ensure your subscription is supported or enabled for Marketplace deployment [Learn more](https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-serverless?tabs=azure-ai-studio#prerequisites)
   - There is a known issue of conflict operation between Marketplace subscription and endpoint deployment. **Rerun deployment** to fix it
-

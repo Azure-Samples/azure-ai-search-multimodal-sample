@@ -1,3 +1,4 @@
+--index-url https://packagefeedproxy.microsoft.io/pypi/simple/
 aiohttp
 aiofiles
 azure-ai-documentintelligence == 1.0.0
@@ -12,6 +13,5 @@ pydantic
 pillow
 rich
 azure-storage-blob == 12.24.0
---extra-index-url https://pkgs.dev.azure.com/azure-sdk/public/_packaging/azure-sdk-for-python/pypi/simple/
-azure-search-documents==11.6.0a20250505003
+azure-search-documents @ https://pkgs.dev.azure.com/azure-sdk/29ec6040-b234-4e31-b139-33dc4287b756/_packaging/3572dbf9-b5ef-433b-9137-fc4d7768e7cc/pypi/download/azure-search-documents/11.6a20250505003/azure_search_documents-11.6.0a20250505003-py3-none-any.whl#sha256=2a1f6b3e42b62444ba55d2224644921c090d152f88b35f30a72444efdc42d018
 pyjwt
